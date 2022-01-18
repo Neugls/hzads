@@ -6,6 +6,8 @@ type Conf struct {
 	DataDir      string
 	DatabaseName string
 	TablePrefix  string
+	AppName      string
+	Secret       string
 }
 
 //V current config value
