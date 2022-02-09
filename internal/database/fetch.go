@@ -13,6 +13,19 @@ func Select(dest interface{}, query string, args ...interface{}) error {
 	return db.Select(dest, Prefix(query), args...)
 }
 
+func Insert(query string, args ...interface{}) (int64, error) {
+	r, e := db.Exec(Prefix(query), args...)
+	if e != nil {
+		return 0, e
+	}
+	return r.LastInsertId()
+}
+
+func Update(query string, args ...interface{}) error {
+	_, err := db.Exec(Prefix(query), args...)
+	return err
+}
+
 //Get get object from db
 func Get(dest interface{}, query string, args ...interface{}) error {
 	return db.Get(dest, Prefix(query), args...)

@@ -1,7 +1,9 @@
 package database
 
 import (
+	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"strings"
@@ -10,6 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
 	migrate "github.com/rubenv/sql-migrate"
+	"hz.code/neugls/ads/emd"
 	"hz.code/neugls/ads/internal/config"
 	_ "modernc.org/sqlite" //sqlite 3 import
 )
@@ -44,21 +47,26 @@ func Setup() error {
 	}
 	db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
 	//do the database migration
-	migration()
-
-	return nil
+	return migration()
 }
 
-func migration() {
-	migrations := &migrate.FileMigrationSource{
-		Dir: "sqls",
+func migration() error {
+	sqlDir, err := fs.Sub(emd.ResSQLs, "assets/sqls")
+	if err != nil {
+		return err
 	}
 
-	_, err := migrate.Exec(db.DB, "sqlite3", migrations, migrate.Up)
-	//   ^^^ <-- Here db is a *sqlx.DB, the db.DB field is the plain sql.DB
-	if err != nil {
-		log.Printf("migration database fail: %s", err)
+	migrationSource := &migrate.HttpFileSystemMigrationSource{
+		FileSystem: http.FS(sqlDir),
 	}
+
+	migrations, err := migrate.Exec(db.DB, "sqlite3", migrationSource, migrate.Up)
+	if err != nil {
+		log.Printf("migration d  atabase fail: %s", err)
+	} else {
+		log.Printf("migration database success with %d", migrations)
+	}
+	return err
 }
 
 //Close Close the db

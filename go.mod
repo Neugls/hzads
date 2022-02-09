@@ -33,6 +33,7 @@ require (
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/sirupsen/logrus v1.5.0 // indirect
+	github.com/thanhhh/gin-gonic-realip v0.0.0-20180527053022-1a91c06e8abf // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/mod v0.3.0 // indirect
 	golang.org/x/sys v0.0.0-20210902050250-f475640dd07b // indirect

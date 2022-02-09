@@ -1,15 +1,13 @@
 package router
 
 import (
-	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"hz.code/hz/golib/language"
 	"hz.code/neugls/ads/internal/config"
@@ -33,7 +31,7 @@ type HTMLRender struct {
 	GoogleAnalyticsID string
 
 	layoutFiles []string
-	base        string
+	base        fs.FS
 }
 
 func newHTMLRender() HTMLRender {
@@ -49,19 +47,18 @@ func newHTMLRender() HTMLRender {
 
 //Init Init
 func (r *HTMLRender) Init(viewsDir fs.FS, fm template.FuncMap) error {
+	r.base = viewsDir
 	r.FuncMap = getFunctionMaps()
 	r.FuncMap = r.mergeFuncMap(fm)
 
 	layoutFiles, includeFiles := []string{}, []string{}
 	fs.WalkDir(viewsDir, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
+			log.Printf("html render init walk dir %s fail, err: %s", path, err)
 			return err
 		}
-		fmt.Println(path)
 
 		if !d.IsDir() && strings.HasSuffix(path, ".html") {
-
-			// name := strings.TrimPrefix(path, root)
 			name := strings.Replace(path, string(os.PathSeparator), ".", -1)
 			if strings.HasPrefix(name, "layouts.") {
 				layoutFiles = append(layoutFiles, path)
@@ -82,7 +79,7 @@ func (r *HTMLRender) Init(viewsDir fs.FS, fm template.FuncMap) error {
 		r.Tmpls[name] = template.New(filepath.Base(f))
 		files := append(layoutFiles, f)
 		r.Tmpls[name] = r.Tmpls[name].Funcs(r.FuncMap)
-		r.Tmpls[name] = template.Must(r.Tmpls[name].ParseFiles(files...))
+		r.Tmpls[name] = template.Must(r.Tmpls[name].ParseFS(r.base, files...))
 	}
 
 	return nil
@@ -97,26 +94,27 @@ func (r *HTMLRender) mergeFuncMap(fm template.FuncMap) template.FuncMap {
 
 //Instance implements the html render interface of gin
 func (r HTMLRender) Instance(name string, data interface{}) render.Render {
-	if gin.IsDebugging() {
-		name = strings.ReplaceAll(name, ".", string(os.PathSeparator))
-		name = strings.Replace(name, "/html", ".html", 1)
-		f := path.Join(r.base, name)
-		if _, e := os.Stat(f); e == nil {
-			t := template.New(filepath.Base(f))
-			fs := []string{}
-			fs = append(fs, r.layoutFiles...)
-			fs = append(fs, f)
-			t.Funcs(r.FuncMap)
-			t = template.Must(t.ParseFiles(fs...))
+	// if gin.IsDebugging() {
+	// 	name = strings.ReplaceAll(name, ".", string(os.PathSeparator))
+	// 	name = strings.Replace(name, "/html", ".html", 1)
+	// 	f := path.Join(r.base, name)
+	// 	fmt.Println(f + "..")
+	// 	if _, e := os.Stat(f); e == nil {
+	// 		t := template.New(filepath.Base(f))
+	// 		fs := []string{}
+	// 		fs = append(fs, r.layoutFiles...)
+	// 		fs = append(fs, f)
+	// 		t.Funcs(r.FuncMap)
+	// 		t = template.Must(t.ParseFiles(fs...))
 
-			return render.HTML{
-				Template: t,
-				Name:     "",
-				Data:     data,
-			}
-		}
-		panic(fmt.Sprintf("get html instance fail, name: %s, data: %s", name, data))
-	}
+	// 		return render.HTML{
+	// 			Template: t,
+	// 			Name:     "",
+	// 			Data:     data,
+	// 		}
+	// 	}
+	// 	panic(fmt.Sprintf("get html instance fail, name: %s, data: %s", name, data))
+	// }
 
 	if t, ok := r.Tmpls[name]; ok {
 		return render.HTML{

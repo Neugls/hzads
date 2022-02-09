@@ -1,0 +1,9 @@
+.alert.alert-warning {
+    background: #f4c043;
+    border: solid 1px #bb9332;
+    border-radius: 5px;
+  }
+  .alert {
+    padding: 10px;
+    margin-bottom: 10px;
+  }

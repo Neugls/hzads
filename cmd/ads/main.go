@@ -26,7 +26,9 @@ func main() {
 	language.SetLocale(*locale)
 
 	//setup db
-	database.Setup()
+	if err := database.Setup(); err != nil {
+		panic("setup database fail: " + err.Error())
+	}
 	defer database.Close()
 
 	log.Printf(os.Args[0])

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.title}}</title>
+    <meta name="description" content="A minimalist layout for Login pages. Built with Pico CSS.">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="canonical" href="https://picocss.com/examples/sign-in/">
+
+    <!-- Pico.css -->
+    <link rel="stylesheet" href="/static/pico.min.css">
+    <link rel="stylesheet" href="/static/common.css">
+
+    <!-- Custom styles for this example -->
+    <link rel="stylesheet" href="custom.css">
+  </head>
+
+  <body>
+
+    <!-- Nav -->
+    <nav class="container-fluid">
+      <ul>
+        <li><a href="./" class="contrast" onclick="event.preventDefault()"><strong>好智广告管理系统</strong></a></li>
+      </ul>
+      <!-- <ul>
+        <li><a href="#" class="contrast" data-theme-switcher="auto">Auto</a></li>
+        <li><a href="#" class="contrast" data-theme-switcher="light">Light</a></li>
+        <li><a href="#" class="contrast" data-theme-switcher="dark">Dark</a></li> -->
+      </ul>
+    </nav><!-- ./ Nav -->
+
+    <!-- Main -->
+    <main class="container">
+      <article class="grid">
+        <div>
+          <hgroup>
+            <h1>首次使用请设置管理账号</h1>
+            <h2>好智广告管理系统</h2>
+          </hgroup>
+          {{if ne .error ""}}
+            <div class="alert alert-warning">
+                {{.error}}
+            </div>
+            {{end}}
+          <form method="post" action="/init">
+            <input type="text" name="username" placeholder="管理员账号" aria-label="username" autocomplete="username" required>
+            <input type="password" name="password" placeholder="密码" aria-label="password"  autocomplete="password" required>
+            <input type="password" name="password1" placeholder="再输一次密码" aria-label="Password" autocomplete="password" required>
+            <button type="submit" class="contrast">开始使用</button>
+          </form>
+        </div>
+        <div></div>
+      </article>
+    </main><!-- ./ Main -->
+
+
+  </body>
+
+</html>

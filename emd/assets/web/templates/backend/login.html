@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.title}}</title>
+    <meta name="description" content="A minimalist layout for Login pages. Built with Pico CSS.">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="canonical" href="https://picocss.com/examples/sign-in/">
+
+    <!-- Pico.css -->
+    <link rel="stylesheet" href="/static/pico.min.css">
+    <link rel="stylesheet" href="/static/common.css">
+  </head>
+
+  <body>
+
+    <!-- Nav -->
+    <nav class="container-fluid">
+      <ul>
+        <li><a href="./" class="contrast" onclick="event.preventDefault()"><strong>好智广告管理系统</strong></a></li>
+      </ul>
+      <!-- <ul>
+        <li><a href="#" class="contrast" data-theme-switcher="auto">Auto</a></li>
+        <li><a href="#" class="contrast" data-theme-switcher="light">Light</a></li>
+        <li><a href="#" class="contrast" data-theme-switcher="dark">Dark</a></li> -->
+      </ul>
+    </nav><!-- ./ Nav -->
+
+    <!-- Main -->
+    <main class="container">
+      <article class="grid">
+        <div>
+          <hgroup>
+            <h1>登录</h1>
+            <h2>好智广告管理系统</h2>
+          </hgroup>
+          {{if ne .flashMsg ""}}
+            <div class="alert alert-warning">
+                {{.flashMsg}}
+            </div>
+            {{end}}
+          <form method="post" action="/login">
+            <input type="text" name="username" placeholder="用户名" aria-label="Login" value="{{.lastUsername}}" autocomplete="nickname" required>
+            <input type="password" name="password" placeholder="密码" aria-label="Password" autocomplete="current-password" required>
+            <fieldset>
+              <label for="remember">
+                <input type="checkbox" role="switch" id="remember" name="remember">
+                记住我
+              </label>
+            </fieldset>
+            <button type="submit" class="contrast">登录</button>
+            <input type="hidden" name="token" value="{{.token}}">
+            <input type="hidden" name="return" value="{{.return}}">
+          </form>
+        </div>
+        <div></div>
+      </article>
+    </main><!-- ./ Main -->
+
+
+  </body>
+
+</html>
