@@ -51,8 +51,12 @@ func AddAd(c *gin.Context) {
 			})
 			return
 		}
-		content = path.Join(config.V.DataDir, "uploads/"+utils.GetRandomString(20)+filepath.Ext(contentFile.Filename))
-		if err := os.MkdirAll(path.Dir(content), 0777); err != nil {
+		content = "uploads/" + utils.GetRandomString(20) + filepath.Ext(contentFile.Filename)
+		abs := path.Join(config.V.DataDir, content)
+		if c, e := filepath.Abs(abs); e == nil {
+			abs = c
+		}
+		if err := os.MkdirAll(path.Dir(abs), 0777); err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": "error",
 				"error":  "mkdir error: " + err.Error(),
@@ -60,7 +64,7 @@ func AddAd(c *gin.Context) {
 			return
 		}
 
-		if err := c.SaveUploadedFile(contentFile, "./"+content); err != nil {
+		if err := c.SaveUploadedFile(contentFile, abs); err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": "error",
 				"error":  "save upload file error: " + err.Error(),

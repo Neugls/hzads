@@ -42,7 +42,7 @@
                 ads_html += '<img src="' + ad.content + '" />';
             }
             else if (ad.type == "video"){
-                ads_html += '<video src="' + ad.content + '"  autoplay></video>';
+                ads_html += '<video src="' + ad.content + '"></video>';
             }else if (ad.type == "webpage"){
                 ads_html += '<iframe src="' + ad.content + '"  frameborder="0" allowfullscreen></iframe>';
             }
@@ -55,28 +55,39 @@
 
     let timer = 0;
     let transition_time = 1000;
-    let ads_interval = 5000;
+    let ads_interval = 10000;
 
     function playAds(ads){
-        
-        if (timer > 0 ) clearInterval(timer);
+        $("#ads-container .ad-item").eq(0).css("left", "0");
+
         if(ads.length > 1){
             let current_ad = 0;
-
-
-            $("#ads-container .ad-item").eq(current_ad).css("left", "0");
+            if (timer > 0 ) clearInterval(timer);
+            
             timer = setInterval( () => {
                 let last = current_ad;
                 current_ad = (current_ad + 1) % ads.length;
+
+                //如果是视频，就先暂停视频播放
+                let video = $("#ads-container .ad-item").eq(last).find("video");
+                if(video.length>0){
+                    if(video[0]) video[0].pause();
+                }
+
                 $("#ads-container .ad-item").eq(last).animate({left: "-100vw"}, transition_time, ()=>{
                     $("#ads-container .ad-item").eq(last).css("left", "100vw");
                 });
-                $("#ads-container .ad-item").eq(current_ad).animate({left: "0"}, transition_time);
+                $("#ads-container .ad-item").eq(current_ad).animate({left: "0"}, transition_time, ()=>{
+                    let video = $("#ads-container .ad-item").eq(current_ad).find("video");
+                    if(video.length>0){
+                        video[0].play();
+                    }
+                });
             }, ads_interval);
         }
     }
 
-    let reloadInterval = 10*1000;
+    let reloadInterval = 30*60*1000;
 
     function startShow(){
        const action = ()=>{

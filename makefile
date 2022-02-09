@@ -12,9 +12,9 @@ LDFLAGS = -ldflags "-X ${PACKAGE}.Version=${VERSION} -X ${PACKAGE}.COMMIT=${COMM
 
 
 build-linux-arm:
-	rm build/* ; \
-	GOOS=linux GOARCH=arm64 go build -v ${LDFLAGS} -o dist/hzads-linux-amd64-${VERSION} cmd/ads/main.go ; \
-	upx dist/hzads-linux-arm64-${VERSION}
+	rm dist/* ; \
+	GOOS=linux GOARCH=arm GOARM=5 go build -v ${LDFLAGS} -o dist/hzads-linux-amd64-${VERSION} cmd/ads/main.go ; \
+
 build-apple:
 	rm build/* ; \
 	GOOS=darwin GOARCH=arm64 go build -v ${LDFLAGS} -o build/hzads-mac-arm64-${VERSION} cmd/ads/main.go 
